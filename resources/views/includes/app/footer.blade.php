@@ -1,3 +1,0 @@
-<footer class="main-footer">
-    <b>Version</b> 1.0.0
-</footer>
