@@ -14,6 +14,9 @@ function onSave() {
 
   newTodo.value = null;
 }
+function onRemove(index) {
+  todos.value.splice(index, 1);
+}
 </script>
 
 <template>
@@ -71,34 +74,44 @@ function onSave() {
         </div>
       </div>
       <div v-else class="p-4 space-y-1">
-        <label
+        <div
           v-for="(todo, index) of todos"
           :key="todo.id"
           :class="[
-            'p-3 rounded-xl cursor-pointer transition flex items-center gap-3 transition',
-            todo.done ? 'bg-neutral-50/50' : 'hover:bg-neutral-50',
+            'p-3 rounded-xl transition flex items-center justify-between transition',
+            todo.done ? 'bg-neutral-50/50' : '',
           ]"
         >
-          <div class="relative flex items-center">
-            <input
-              type="checkbox"
-              class="appearance-none w-5 h-5 border border-neutral-300 rounded-full peer transition checked:bg-neutral-300"
-              v-model="todos[index].done"
-            />
-            <Icon
-              icon="ri:check-fill"
-              class="hidden absolute top-1 left-1 size-3 text-white peer-checked:block"
-            />
+          <div class="flex items-center gap-3">
+            <label class="relative flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                class="appearance-none w-5 h-5 border border-neutral-300 rounded-full peer transition cursor-pointer checked:bg-neutral-300"
+                v-model="todos[index].done"
+              />
+              <Icon
+                icon="ri:check-fill"
+                class="hidden absolute top-1 left-1 size-3 text-white peer-checked:block"
+              />
+            </label>
+            <p
+              :class="[
+                'font-medium',
+                todo.done
+                  ? 'text-neutral-400 line-through'
+                  : 'text-neutral-700',
+              ]"
+            >
+              {{ todo.name }}
+            </p>
           </div>
-          <p
-            :class="[
-              'font-medium',
-              todo.done ? 'text-neutral-400 line-through' : 'text-neutral-700',
-            ]"
+          <button
+            class="cursor-pointer text-neutral-300 hover:text-red-500"
+            @click="onRemove(index)"
           >
-            {{ todo.name }}
-          </p>
-        </label>
+            <Icon icon="ri:close-fill" class="size-5" />
+          </button>
+        </div>
       </div>
       <form class="p-6 border-t border-neutral-100" @submit.prevent="onSave">
         <input
