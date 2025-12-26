@@ -3,6 +3,17 @@ import { ref } from 'vue';
 import { Icon } from '@iconify/vue';
 
 const todos = ref([]);
+const newTodo = ref(null);
+
+function onSave() {
+  todos.value.push({
+    id: Date.now(),
+    name: newTodo.value,
+    done: false,
+  });
+
+  newTodo.value = null;
+}
 </script>
 
 <template>
@@ -52,7 +63,7 @@ const todos = ref([]);
             class="size-10 text-neutral-300"
           />
         </div>
-        <div>
+        <div class="max-w-[200px]">
           <h2 class="text-lg font-semibold text-neutral-900">All Done</h2>
           <p class="text-neutral-400 leading-relaxed">
             No tasks for today, add some tasks below.
@@ -89,13 +100,15 @@ const todos = ref([]);
           </p>
         </label>
       </div>
-      <div class="p-6 border-t border-neutral-100">
+      <form class="p-6 border-t border-neutral-100" @submit.prevent="onSave">
         <input
           type="text"
           class="h-13 px-5 w-full border border-transparent rounded-2xl bg-neutral-50 transition placeholder:text-neutral-400 focus:bg-white focus:outline-none focus:border-neutral-300"
           placeholder="Add new activities"
+          required
+          v-model="newTodo"
         />
-      </div>
+      </form>
     </div>
   </div>
 </template>
