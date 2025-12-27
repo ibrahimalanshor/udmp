@@ -39,17 +39,25 @@ function onSaveEdit() {
   todos.value[editingIndex.value].name = editValue.value;
   editingIndex.value = null;
 }
+function onToggleDarkMode() {
+  localStorage.setItem(
+    'theme',
+    document.documentElement.classList.contains('dark') ? 'light' : 'dark',
+  );
+
+  document.documentElement.classList.toggle('dark');
+}
 </script>
 
 <template>
   <div
-    class="bg-neutral-50 text-neutral-900 min-h-screen flex items-center px-4 py-4 sm:py-10 lg:py-20"
+    class="bg-neutral-50 text-neutral-900 min-h-screen flex items-center px-4 py-4 sm:py-10 lg:py-20 dark:bg-black"
   >
     <div
-      class="max-w-md w-full mx-auto bg-white border border-neutral-200 rounded-3xl"
+      class="max-w-md w-full mx-auto bg-white border border-neutral-200 rounded-3xl dark:bg-neutral-900 dark:border-neutral-800"
     >
       <div
-        class="p-6 border-b border-neutral-100 flex items-center justify-between"
+        class="p-6 border-b border-neutral-100 flex items-center justify-between dark:border-neutral-800"
       >
         <div class="space-y-1">
           <p
@@ -57,23 +65,26 @@ function onSaveEdit() {
           >
             Activities
           </p>
-          <h1 class="font-bold text-neutral-900 text-2xl tracking-tight">
+          <h1
+            class="font-bold text-neutral-900 text-2xl tracking-tight dark:text-white"
+          >
             Today
           </h1>
         </div>
         <div class="flex items-center gap-2">
           <a
             href=""
-            class="block w-10 h-10 border border-neutral-200 text-neutral-900 rounded-full flex items-center justify-center transition hover:bg-black hover:border-black hover:text-white"
+            class="block w-10 h-10 border border-neutral-200 text-neutral-900 rounded-full flex items-center justify-center transition hover:bg-black hover:border-black hover:text-white dark:border-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-400 dark:hover:border-neutral-800 dark:hover:bg-neutral-800"
           >
             <Icon icon="ri:github-fill" class="size-6" />
           </a>
-          <a
-            href=""
-            class="block w-10 h-10 border border-neutral-200 text-neutral-900 rounded-full flex items-center justify-center transition hover:bg-black hover:border-black hover:text-white"
+          <button
+            title="Toggle Dark Mode"
+            class="block w-10 h-10 border border-neutral-200 text-neutral-900 rounded-full flex items-center justify-center transition hover:bg-black hover:border-black hover:text-white dark:border-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-400 dark:hover:border-neutral-800 dark:hover:bg-neutral-800"
+            @click="onToggleDarkMode"
           >
             <Icon icon="ri:moon-fill" class="size-5" />
-          </a>
+          </button>
         </div>
       </div>
       <div
@@ -101,19 +112,19 @@ function onSaveEdit() {
           :key="todo.id"
           :class="[
             'p-3 rounded-xl transition flex items-center justify-between gap-3 transition',
-            todo.done ? 'bg-neutral-50/50' : '',
+            todo.done ? 'bg-neutral-50/50 dark:bg-neutral-800/50' : '',
           ]"
         >
           <div class="flex items-center gap-3 grow">
             <label class="relative flex items-center cursor-pointer">
               <input
                 type="checkbox"
-                class="appearance-none w-5 h-5 border border-neutral-300 rounded-full peer transition cursor-pointer checked:bg-neutral-300"
+                class="appearance-none w-5 h-5 border-2 border-neutral-300 rounded-full peer transition cursor-pointer checked:bg-neutral-300 dark:border-neutral-600 dark:checked:bg-neutral-600"
                 v-model="todos[index].done"
               />
               <Icon
                 icon="ri:check-fill"
-                class="hidden absolute top-1 left-1 size-3 text-white peer-checked:block"
+                class="hidden absolute top-1 left-1 size-3 text-white peer-checked:block dark:text-neutral-900"
               />
             </label>
             <form
@@ -124,7 +135,12 @@ function onSaveEdit() {
             >
               <input
                 ref="editInput"
-                class="w-full border-b border-neutral-300 pb-0.5 text-[1.05rem] focus:outline-none"
+                :class="[
+                  'w-full border-b border-neutral-300 pb-0.5 text-[1.05rem] focus:outline-none dark:border-neutral-700',
+                  todo.done
+                    ? 'text-neutral-400 dark:text-neutral-600'
+                    : 'text-neutral-700 dark:text-white',
+                ]"
                 required
                 v-model="editValue"
                 v-click-outside="onCloseEditing"
@@ -135,8 +151,8 @@ function onSaveEdit() {
               :class="[
                 'font-medium',
                 todo.done
-                  ? 'text-neutral-400 line-through'
-                  : 'text-neutral-700',
+                  ? 'text-neutral-400 line-through dark:text-neutral-600'
+                  : 'text-neutral-700 dark:text-white',
               ]"
               @click="onOpenEditing(index)"
             >
@@ -146,7 +162,7 @@ function onSaveEdit() {
           <button
             v-if="editingIndex === index"
             ref="saveEditButton"
-            class="cursor-pointer text-blue-500"
+            class="cursor-pointer text-blue-500 dark:text-blue-400"
             type="submit"
             form="editForm"
           >
@@ -154,17 +170,20 @@ function onSaveEdit() {
           </button>
           <button
             v-else
-            class="cursor-pointer text-neutral-300 hover:text-red-500"
+            class="cursor-pointer text-neutral-300 hover:text-red-500 dark:text-neutral-700 dark:hover:text-red-400"
             @click="onRemove(index)"
           >
             <Icon icon="ri:close-fill" class="size-5" />
           </button>
         </div>
       </div>
-      <form class="p-6 border-t border-neutral-100" @submit.prevent="onSave">
+      <form
+        class="p-6 border-t border-neutral-100 dark:border-neutral-800"
+        @submit.prevent="onSave"
+      >
         <input
           type="text"
-          class="h-13 px-5 w-full border border-transparent rounded-2xl bg-neutral-50 transition placeholder:text-neutral-400 focus:bg-white focus:outline-none focus:border-neutral-300"
+          class="h-13 px-5 w-full border border-transparent rounded-2xl bg-neutral-50 transition placeholder:text-neutral-400 focus:bg-white focus:outline-none focus:border-neutral-300 dark:bg-neutral-800 dark:placeholder:text-neutral-500 dark:focus:bg-neutral-800 dark:focus:border-neutral-600 dark:text-white"
           placeholder="Add new activities"
           required
           v-model="newTodo"
