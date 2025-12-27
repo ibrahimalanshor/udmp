@@ -7,6 +7,7 @@ const newTodo = ref(null);
 const editingIndex = ref(null);
 const editValue = ref(null);
 const editInput = useTemplateRef('editInput');
+const saveEditButton = useTemplateRef('saveEditButton');
 
 function onSave() {
   todos.value.push({
@@ -28,8 +29,14 @@ async function onOpenEditing(index) {
 
   editInput.value[0].focus();
 }
-function onCloseEditing() {
-  editingIndex.value = false;
+function onCloseEditing(e) {
+  if (!saveEditButton.value[0].contains(e.target)) {
+    editingIndex.value = false;
+  }
+}
+function onSaveEdit() {
+  todos.value[editingIndex.value].name = editValue.value;
+  editingIndex.value = null;
 }
 </script>
 
@@ -108,13 +115,20 @@ function onCloseEditing() {
                 class="hidden absolute top-1 left-1 size-3 text-white peer-checked:block"
               />
             </label>
-            <input
+            <form
               v-if="editingIndex === index"
-              ref="editInput"
-              class="grow border-b border-neutral-300 pb-0.5 text-[1.05rem] focus:outline-none"
-              v-model="editValue"
-              v-click-outside="onCloseEditing"
-            />
+              id="editForm"
+              class="grow"
+              @submit.prevent="onSaveEdit"
+            >
+              <input
+                ref="editInput"
+                class="w-full border-b border-neutral-300 pb-0.5 text-[1.05rem] focus:outline-none"
+                required
+                v-model="editValue"
+                v-click-outside="onCloseEditing"
+              />
+            </form>
             <p
               v-else
               :class="[
@@ -129,6 +143,16 @@ function onCloseEditing() {
             </p>
           </div>
           <button
+            v-if="editingIndex === index"
+            ref="saveEditButton"
+            class="cursor-pointer text-blue-500"
+            type="submit"
+            form="editForm"
+          >
+            <Icon icon="ri:check-fill" class="size-5" />
+          </button>
+          <button
+            v-else
             class="cursor-pointer text-neutral-300 hover:text-red-500"
             @click="onRemove(index)"
           >
