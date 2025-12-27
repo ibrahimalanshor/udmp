@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
+    "click-outside-vue3": "^4.0.1",
     "tailwindcss": "^4.1.18",
     "vue": "^3.5.24"
   },

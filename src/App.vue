@@ -1,9 +1,12 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, useTemplateRef, nextTick } from 'vue';
 import { Icon } from '@iconify/vue';
 
 const todos = ref([]);
 const newTodo = ref(null);
+const editingIndex = ref(null);
+const editValue = ref(null);
+const editInput = useTemplateRef('editInput');
 
 function onSave() {
   todos.value.push({
@@ -16,6 +19,17 @@ function onSave() {
 }
 function onRemove(index) {
   todos.value.splice(index, 1);
+}
+async function onOpenEditing(index) {
+  editingIndex.value = index;
+  editValue.value = todos.value[index].name;
+
+  await nextTick();
+
+  editInput.value[0].focus();
+}
+function onCloseEditing() {
+  editingIndex.value = false;
 }
 </script>
 
@@ -78,11 +92,11 @@ function onRemove(index) {
           v-for="(todo, index) of todos"
           :key="todo.id"
           :class="[
-            'p-3 rounded-xl transition flex items-center justify-between transition',
+            'p-3 rounded-xl transition flex items-center justify-between gap-3 transition',
             todo.done ? 'bg-neutral-50/50' : '',
           ]"
         >
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-3 grow">
             <label class="relative flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -94,13 +108,22 @@ function onRemove(index) {
                 class="hidden absolute top-1 left-1 size-3 text-white peer-checked:block"
               />
             </label>
+            <input
+              v-if="editingIndex === index"
+              ref="editInput"
+              class="grow border-b border-neutral-300 pb-0.5 text-[1.05rem] focus:outline-none"
+              v-model="editValue"
+              v-click-outside="onCloseEditing"
+            />
             <p
+              v-else
               :class="[
                 'font-medium',
                 todo.done
                   ? 'text-neutral-400 line-through'
                   : 'text-neutral-700',
               ]"
+              @click="onOpenEditing(index)"
             >
               {{ todo.name }}
             </p>
