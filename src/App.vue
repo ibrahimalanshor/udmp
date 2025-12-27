@@ -1,8 +1,13 @@
 <script setup>
 import { ref, useTemplateRef, nextTick } from 'vue';
 import { Icon } from '@iconify/vue';
+import { useTodoStore } from './todo.store';
+import { storeToRefs } from 'pinia';
 
-const todos = ref([]);
+const todoStore = useTodoStore();
+
+const { todos } = storeToRefs(todoStore);
+
 const newTodo = ref(null);
 const editingIndex = ref(null);
 const editValue = ref(null);
@@ -10,16 +15,12 @@ const editInput = useTemplateRef('editInput');
 const saveEditButton = useTemplateRef('saveEditButton');
 
 function onSave() {
-  todos.value.push({
-    id: Date.now(),
-    name: newTodo.value,
-    done: false,
-  });
+  todoStore.create(newTodo.value);
 
   newTodo.value = null;
 }
 function onRemove(index) {
-  todos.value.splice(index, 1);
+  todoStore.remove(index);
 }
 async function onOpenEditing(index) {
   editingIndex.value = index;
@@ -42,7 +43,7 @@ function onSaveEdit() {
 
 <template>
   <div
-    class="bg-neutral-50 text-neutral-900 min-h-screen flex items-center p-4"
+    class="bg-neutral-50 text-neutral-900 min-h-screen flex items-center px-4 py-4 sm:py-10 lg:py-20"
   >
     <div
       class="max-w-md w-full mx-auto bg-white border border-neutral-200 rounded-3xl"
